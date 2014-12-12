@@ -271,8 +271,8 @@ public class DataBaseFile {
     public int getNewKeys() {
         int result = 0;
         for (Node node : data) {
-            if ((node.getStatus() == NEW_NODE) || (node.getStatus() == MODIFIED_NODE) ||
-                    ((node.getStatus() == DELETED_NODE) && (node.old))) {
+            if ((node.getStatus() == NEW_NODE) || (node.getStatus() == MODIFIED_NODE)
+                    || ((node.getStatus() == DELETED_NODE) && (node.old))) {
                 ++result;
             }
         }
