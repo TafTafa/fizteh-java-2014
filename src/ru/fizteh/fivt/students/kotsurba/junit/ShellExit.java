@@ -20,5 +20,4 @@ public final class ShellExit extends SimpleShellCommand {
             System.out.println(context.getChanges() + " unsaved changes");
         }
     }
-
 }

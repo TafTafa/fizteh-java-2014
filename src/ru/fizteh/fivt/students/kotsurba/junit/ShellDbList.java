@@ -31,5 +31,4 @@ public final class ShellDbList extends SimpleShellCommand {
         }
         System.out.println(keys);
     }
-
 }
