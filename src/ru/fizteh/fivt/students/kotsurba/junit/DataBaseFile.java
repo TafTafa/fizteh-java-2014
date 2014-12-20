@@ -290,6 +290,7 @@ public class DataBaseFile {
     }
 
     public List<String> getAllKeys() {
+
         List<String> result = new ArrayList<String>();
         for (Node node : data) {
             if (node.getStatus() != DELETED_NODE) {

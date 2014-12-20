@@ -39,17 +39,17 @@ public class MyTableProviderTest {
         provider.removeTable("non_existing_table");
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testGetTableWithWrongName() {
         provider.getTable(".." + File.separator + "database");
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testCreateTableWithWrongName() {
         provider.createTable(".." + File.separator + "database");
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testUseTableWithWrongName() {
         provider.removeTable(".." + File.separator + "database");
     }

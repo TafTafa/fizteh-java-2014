@@ -8,18 +8,23 @@ import ru.fizteh.fivt.students.kotsurba.junit.MyTableProviderFactory;
 import java.io.IOException;
 
 public class MyTableProviderFactoryTest {
+    TableProviderFactory factory;
+
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    @Before
+    public void before() throws IOException {
+        factory = new MyTableProviderFactory();
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testCreateNull() {
-        TableProviderFactory factory = new MyTableProviderFactory();
         factory.create(null);
     }
 
     @Test
     public void testCreateNotNull() throws IOException {
-        TableProviderFactory factory = new MyTableProviderFactory();
         Assert.assertNotNull(factory.create(folder.newFolder("folder").getCanonicalPath()));
     }
 }

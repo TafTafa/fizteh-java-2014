@@ -36,7 +36,7 @@ public final class DataBaseTable implements TableProvider {
 
         if (name.matches("[" + '"' + "'\\/:/*/?/</>/|/.\\\\]+") || name.contains(File.separator)
                 || name.contains(".")) {
-            throw new RuntimeException("Wrong symbols in name!");
+            throw new IllegalArgumentException("Wrong symbols in name!");
         }
     }
 
