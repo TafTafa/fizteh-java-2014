@@ -12,14 +12,17 @@ public final class DataBase implements Table {
     private String dataBaseDirectory;
     private DataBaseFile[] files;
 
+    public static final int DIRECTORY_COUNT = 16;
+    public static final int FILES_COUNT = 16;
+
     public final class DirFile {
         private int nDir;
         private int nFile;
 
         public DirFile(int key) {
             key = Math.abs(key);
-            nDir = key % 16;
-            nFile = (key / 16) % 16;
+            nDir = key % DIRECTORY_COUNT;
+            nFile = (key / DIRECTORY_COUNT) % FILES_COUNT;
         }
 
         public DirFile(final int newDir, final int newFile) {
@@ -36,7 +39,7 @@ public final class DataBase implements Table {
         }
 
         public int getId() {
-            return nDir * 16 + nFile;
+            return nDir * DIRECTORY_COUNT + nFile;
         }
     }
 
@@ -44,7 +47,7 @@ public final class DataBase implements Table {
         name = new File(dbDirectory).getName();
         dataBaseDirectory = dbDirectory;
         isCorrect();
-        files = new DataBaseFile[256];
+        files = new DataBaseFile[DIRECTORY_COUNT * FILES_COUNT];
         loadFiles();
     }
 
@@ -62,7 +65,7 @@ public final class DataBase implements Table {
                 throw new MultiDataBaseException(dataBaseDirectory + " wrong file first name " + dir);
             }
 
-            if ((firstName < 0) || firstName > 15) {
+            if ((firstName < 0) || firstName > FILES_COUNT - 1) {
                 throw new MultiDataBaseException(dataBaseDirectory + " wrong file first name " + dir);
             }
         }
@@ -111,8 +114,8 @@ public final class DataBase implements Table {
     }
 
     public void loadFiles() {
-        for (int i = 0; i < 16; ++i) {
-            for (int j = 0; j < 16; ++j) {
+        for (int i = 0; i < DIRECTORY_COUNT; ++i) {
+            for (int j = 0; j < FILES_COUNT; ++j) {
                 DirFile node = new DirFile(i, j);
                 DataBaseFile file = new DataBaseFile(getFullName(node), node.nDir, node.nFile);
                 files[node.getId()] = file;
@@ -127,8 +130,8 @@ public final class DataBase implements Table {
     }
 
     public void drop() {
-        for (byte i = 0; i < 16; ++i) {
-            for (byte j = 0; j < 16; ++j) {
+        for (byte i = 0; i < DIRECTORY_COUNT; ++i) {
+            for (byte j = 0; j < FILES_COUNT; ++j) {
                 File file = new File(getFullName(new DirFile(i, j)));
                 if (file.exists()) {
                     if (!file.delete()) {
@@ -173,7 +176,7 @@ public final class DataBase implements Table {
     @Override
     public int commit() {
         int allNew = 0;
-        for (int i = 0; i < 256; ++i) {
+        for (int i = 0; i < DIRECTORY_COUNT * FILES_COUNT; ++i) {
             allNew += files[i].getNewKeys();
             files[i].commit();
         }
@@ -183,7 +186,7 @@ public final class DataBase implements Table {
     @Override
     public int size() {
         int allSize = 0;
-        for (int i = 0; i < 256; ++i) {
+        for (int i = 0; i < DIRECTORY_COUNT * FILES_COUNT; ++i) {
             allSize += files[i].getSize();
         }
         return allSize;
@@ -192,7 +195,7 @@ public final class DataBase implements Table {
     @Override
     public int rollback() {
         int allCanceled = 0;
-        for (int i = 0; i < 256; ++i) {
+        for (int i = 0; i < DIRECTORY_COUNT * FILES_COUNT; ++i) {
             allCanceled += files[i].getNewKeys();
             files[i].rollback();
         }
@@ -201,7 +204,7 @@ public final class DataBase implements Table {
 
     public int getNewKeys() {
         int allNewSize = 0;
-        for (int i = 0; i < 256; ++i) {
+        for (int i = 0; i < DIRECTORY_COUNT * FILES_COUNT; ++i) {
             allNewSize += files[i].getNewKeys();
         }
         return allNewSize;
