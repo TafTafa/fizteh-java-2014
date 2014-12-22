@@ -212,13 +212,11 @@ public final class DataBase implements Table {
 
     @Override
     public List<String> list() {
-        List<String> result = new ArrayList<String>();
+        List result = new ArrayList<>();
         for (DataBaseFile dbf : files) {
             if (dbf.getSize() != 0) {
                 List<String> ans = dbf.getAllKeys();
-                for (String x : ans) {
-                    result.add(x);
-                }
+                result.addAll(ans);
             }
         }
         return result;

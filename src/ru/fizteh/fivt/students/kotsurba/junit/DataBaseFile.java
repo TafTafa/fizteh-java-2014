@@ -96,10 +96,10 @@ public class DataBaseFile {
 
     }
 
-    protected final String fileName;
-    protected File file;
+    private final String fileName;
+    private File file;
     private File dir;
-    protected List<Node> data;
+    private List<Node> data;
     private int fileNumber;
     private int direcotryNumber;
 
@@ -290,8 +290,7 @@ public class DataBaseFile {
     }
 
     public List<String> getAllKeys() {
-
-        List<String> result = new ArrayList<String>();
+        List result = new ArrayList<>();
         for (Node node : data) {
             if (node.getStatus() != DELETED_NODE) {
                 result.add(new String(node.key));
