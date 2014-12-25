@@ -96,7 +96,6 @@ public final class DataBaseTable implements TableProvider {
         checkName(tableName);
 
         File file = new File(tableDir, tableName);
-        ;
 
         if ((!file.exists()) || (file.isFile())) {
             return null;

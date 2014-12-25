@@ -11,7 +11,6 @@ import java.io.RandomAccessFile;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DataBaseFile {
 
