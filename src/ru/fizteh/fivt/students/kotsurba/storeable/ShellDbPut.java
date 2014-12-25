@@ -3,33 +3,28 @@ package ru.fizteh.fivt.students.kotsurba.storeable;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.kotsurba.filemap.shell.CommandString;
 import ru.fizteh.fivt.students.kotsurba.filemap.shell.InvalidCommandException;
-import ru.fizteh.fivt.students.kotsurba.filemap.shell.SimpleShellCommand;
 
 import java.text.ParseException;
 
 public final class ShellDbPut extends SimpleShellCommand {
-    private Context context;
 
     public ShellDbPut(final Context newContext) {
-        context = newContext;
-        setName("put");
-        setNumberOfArgs(3);
-        setHint("usage: put <key> <value>");
+        super("put", 3, "usage: put <key> <value>", newContext);
     }
 
     @Override
     public void run() {
-        if (context.table == null) {
+        if (context.getTable() == null) {
             System.out.println("no table");
             return;
         }
         try {
-            Storeable storeable = ((DataBase) context.table).putStoreable(getArg(1), getSpacedArg(2));
+            Storeable storeable = ((DataBase) context.getTable()).putStoreable(getArg(1), getSpacedArg(2));
             if (storeable == null) {
                 System.out.println("new");
             } else {
                 System.out.println("overwrite");
-                System.out.println(context.provider.serialize(context.table, storeable));
+                System.out.println(context.getProvider().serialize(context.getTable(), storeable));
             }
         } catch (ParseException e) {
             System.out.println("wrong type (" + e.getMessage() + ")");

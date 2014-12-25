@@ -1,13 +1,9 @@
 package ru.fizteh.fivt.students.kotsurba.storeable;
 
 import java.io.IOException;
-import java.util.Scanner;
 
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.kotsurba.filemap.shell.Shell;
-import ru.fizteh.fivt.students.kotsurba.filemap.shell.InvalidCommandException;
-import ru.fizteh.fivt.students.kotsurba.filemap.shell.CommandParser;
-import ru.fizteh.fivt.students.kotsurba.shell.ShellMain;
 
 public class DbMain {
     private static Shell shell;
@@ -46,54 +42,15 @@ public class DbMain {
         }
     }
 
-    private static void packetRun(final String[] args) {
-        try {
-            CommandParser parser = new CommandParser(args);
-            while (!parser.isEmpty()) {
-                shell.executeCommand(parser.getCommand());
-            }
-        } catch (InvalidCommandException | MultiDataBaseException | DataBaseWrongFileFormat | RuntimeException e) {
-            System.err.println(e.getMessage());
-        }
-    }
-
-    private static void interactiveRun() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print(" $ ");
-        while (true) {
-            try {
-                if (!scanner.hasNextLine()) {
-                    throw new ShellExitException("Ctrl + D exit!");
-                }
-
-                String command = scanner.nextLine();
-
-                if (ShellMain.hasTerminalSymbol(command)) {
-                    throw new ShellExitException("Ctrl + D exit or EOF!");
-                }
-
-                CommandParser parser = new CommandParser(command);
-                if (!parser.isEmpty()) {
-                    shell.executeCommand(parser.getCommand());
-                }
-            } catch (MultiDataBaseException | DataBaseWrongFileFormat | InvalidCommandException
-                    | RuntimeException e) {
-                System.err.println(e.getMessage());
-            } finally {
-                System.out.print(" $ ");
-            }
-        }
-    }
-
     public static void main(final String[] args) {
         try {
             checkDbDir();
             initShell();
 
             if (args.length > 0) {
-                packetRun(args);
+                ShellRunner.packetRun(shell, args);
             } else {
-                interactiveRun();
+                ShellRunner.interactiveRun(shell);
             }
 
         } catch (DataBaseException e) {

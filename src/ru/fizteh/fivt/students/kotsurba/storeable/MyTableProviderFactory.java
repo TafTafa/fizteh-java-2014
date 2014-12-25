@@ -23,7 +23,7 @@ public class MyTableProviderFactory implements TableProviderFactory {
         }
 
         if (!tableDirFile.isDirectory()) {
-            throw new IllegalArgumentException("Wrong dir " + dir);
+            throw new IllegalArgumentException("Wrong directory " + dir);
         }
 
         return new DataBaseTable(dir);

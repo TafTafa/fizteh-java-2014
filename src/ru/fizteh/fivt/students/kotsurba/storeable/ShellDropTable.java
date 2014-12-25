@@ -1,26 +1,20 @@
 package ru.fizteh.fivt.students.kotsurba.storeable;
 
-import ru.fizteh.fivt.students.kotsurba.filemap.shell.SimpleShellCommand;
-
 import java.io.IOException;
 
 public class ShellDropTable extends SimpleShellCommand {
-    private Context context;
 
     public ShellDropTable(Context newContext) {
-        context = newContext;
-        setName("drop");
-        setNumberOfArgs(2);
-        setHint("usage: drop <table name>");
+        super("drop", 2, "usage: drop <table name>", newContext);
     }
 
     public void run() {
         try {
-            if ((context.table != null) && (context.table.getName().equals(getArg(1)))) {
-                context.table = null;
+            if ((context.getTable() != null) && (context.getTable().getName().equals(getArg(1)))) {
+                context.setTable(null);
             }
 
-            context.provider.removeTable(getArg(1));
+            context.getProvider().removeTable(getArg(1));
             System.out.println("dropped");
         } catch (IllegalStateException e) {
             System.out.println(getArg(1) + " not exists");

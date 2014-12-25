@@ -1,24 +1,18 @@
 package ru.fizteh.fivt.students.kotsurba.storeable;
 
-import ru.fizteh.fivt.students.kotsurba.filemap.shell.SimpleShellCommand;
-
 import java.io.IOException;
 
 public class ShellDbCommit extends SimpleShellCommand {
-    private Context context;
 
     public ShellDbCommit(final Context newContext) {
-        context = newContext;
-        setName("commit");
-        setNumberOfArgs(1);
-        setHint("usage: commit");
+        super("commit", 1, "usage: commit", newContext);
     }
 
     @Override
     public void run() {
         try {
-            if (context.table != null) {
-                System.out.println(context.table.commit());
+            if (context.getTable() != null) {
+                System.out.println(context.getTable().commit());
             } else {
                 System.out.println("no table");
             }

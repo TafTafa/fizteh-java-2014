@@ -3,10 +3,7 @@ package ru.fizteh.fivt.students.kotsurba.storeable;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,13 +35,12 @@ public final class DataBaseTable implements TableProvider {
     @Override
     public Table createTable(final String tableName, List<Class<?>> columnTypes) throws IOException {
         checkName(tableName);
-        String fullPath = tableDir + File.separator + tableName;
 
         if (columnTypes == null || columnTypes.size() == 0) {
             throw new IllegalArgumentException("wrong type (null)");
         }
 
-        File file = new File(fullPath);
+        File file = new File(tableDir, tableName);
 
         if (file.exists()) {
             return null;
@@ -54,7 +50,7 @@ public final class DataBaseTable implements TableProvider {
             throw new MultiDataBaseException("Cannot create table " + tableName);
         }
 
-        DataBase table = new DataBase(fullPath, this, columnTypes);
+        DataBase table = new DataBase(file.toString(), this, columnTypes);
         tableInUse.put(tableName, table);
         return table;
     }
@@ -62,9 +58,9 @@ public final class DataBaseTable implements TableProvider {
     @Override
     public void removeTable(final String tableName) throws IOException {
         checkName(tableName);
-        String fullPath = tableDir + File.separator + tableName;
 
-        File file = new File(fullPath);
+        File file = new File(tableDir, tableName);
+
         if (!file.exists()) {
             throw new IllegalStateException("Table not exist already!");
         }
@@ -84,9 +80,9 @@ public final class DataBaseTable implements TableProvider {
     @Override
     public Table getTable(String tableName) {
         checkName(tableName);
-        String fullPath = tableDir + File.separator + tableName;
 
-        File file = new File(fullPath);
+        File file = new File(tableDir, tableName);
+
         if ((!file.exists()) || (file.isFile())) {
             return null;
         }
@@ -94,7 +90,7 @@ public final class DataBaseTable implements TableProvider {
             return tableInUse.get(tableName);
         } else {
             try {
-                DataBase table = new DataBase(fullPath, this, null);
+                DataBase table = new DataBase(file.toString(), this, null);
                 tableInUse.put(tableName, table);
                 return table;
             } catch (IOException e) {
@@ -105,7 +101,7 @@ public final class DataBaseTable implements TableProvider {
 
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
-        JSONArray json = null;
+        JSONArray json;
         try {
             json = new JSONArray(value);
         } catch (JSONException e) {
@@ -149,10 +145,8 @@ public final class DataBaseTable implements TableProvider {
 
     @Override
     public List<String> getTableNames() {
-        List<String> result = new ArrayList<String>();
-        for (String str : new File(tableDir).list()) {
-            result.add(str);
-        }
+        List result = new ArrayList();
+        Collections.addAll(result, new File(tableDir).list());
         return result;
     }
 }

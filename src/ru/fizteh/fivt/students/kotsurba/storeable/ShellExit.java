@@ -1,15 +1,9 @@
 package ru.fizteh.fivt.students.kotsurba.storeable;
 
-import ru.fizteh.fivt.students.kotsurba.filemap.shell.SimpleShellCommand;
-
 public final class ShellExit extends SimpleShellCommand {
-    private Context context;
 
     public ShellExit(final Context newContext) {
-        context = newContext;
-        setName("exit");
-        setNumberOfArgs(1);
-        setHint("usage: exit");
+        super("exit", 1, "usage: exit", newContext);
     }
 
     @Override
@@ -18,7 +12,7 @@ public final class ShellExit extends SimpleShellCommand {
             throw new ShellExitException("Exit command");
         } else {
             System.out.println(context.getChanges() + " unsaved changes");
-            System.out.println("Cant't exit");
+            System.out.println("Can't exit");
         }
     }
 

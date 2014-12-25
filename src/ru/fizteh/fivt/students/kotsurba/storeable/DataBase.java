@@ -21,6 +21,9 @@ public final class DataBase implements Table {
 
     public static final int DIRECTORY_COUNT = 16;
     public static final int FILES_COUNT = 16;
+    public static final String DIRECTORY_FORMAT = "dir";
+    public static final String FILES_FORMAT = "dat";
+    public static final String SIGNATURE_FILE = "signature.tsv";
 
     public final class DirFile {
         private int nDir;
@@ -38,11 +41,11 @@ public final class DataBase implements Table {
         }
 
         private String getNDirectory() {
-            return Integer.toString(nDir) + ".dir";
+            return Integer.toString(nDir) + "." + DIRECTORY_FORMAT;
         }
 
         private String getNFile() {
-            return Integer.toString(nFile) + ".dat";
+            return Integer.toString(nFile) + "." + FILES_FORMAT;
         }
 
         public int getId() {
@@ -63,14 +66,14 @@ public final class DataBase implements Table {
             types = MySignature.getSignature(dataBaseDirectory);
         }
 
-        isCorrect();
-        files = new DataBaseFile[256];
+        checkInternalState();
+        files = new DataBaseFile[DIRECTORY_COUNT * FILES_COUNT];
         loadFiles();
     }
 
     private void checkNames(final String[] dirs, final String secondName) {
         for (int i = 0; i < dirs.length; ++i) {
-            if (dirs[i].equals("signature.tsv")) {
+            if (dirs[i].equals(SIGNATURE_FILE)) {
                 continue;
             }
             String[] name = dirs[i].split("\\.");
@@ -97,7 +100,7 @@ public final class DataBase implements Table {
             throw new MultiDataBaseException(dirName + " isn't a directory!");
         }
         String[] dirs = file.list();
-        checkNames(dirs, "dat");
+        checkNames(dirs, FILES_FORMAT);
         for (int i = 0; i < dirs.length; ++i) {
             if (new File(dirName, dirs[i]).isDirectory()) {
                 throw new MultiDataBaseException(dirName + File.separator + dirs[i] + " isn't a file!");
@@ -105,16 +108,16 @@ public final class DataBase implements Table {
         }
     }
 
-    private void isCorrect() {
+    private void checkInternalState() {
         File file = new File(dataBaseDirectory);
         if (file.isFile()) {
             throw new MultiDataBaseException(dataBaseDirectory + " isn't directory!");
         }
 
         String[] dirs = file.list();
-        checkNames(dirs, "dir");
+        checkNames(dirs, DIRECTORY_FORMAT);
         for (int i = 0; i < dirs.length; ++i) {
-            if (!dirs[i].equals("signature.tsv")) {
+            if (!dirs[i].equals(SIGNATURE_FILE)) {
                 isCorrectDirectory(dataBaseDirectory + File.separator + dirs[i]);
             }
         }
@@ -170,9 +173,9 @@ public final class DataBase implements Table {
                     }
                 }
             }
-            tryDeleteDirectory(Integer.toString(i) + ".dir");
+            tryDeleteDirectory(Integer.toString(i) + "." + DIRECTORY_FORMAT);
         }
-        if (!new File(dataBaseDirectory, "signature.tsv").delete()) {
+        if (!new File(dataBaseDirectory, SIGNATURE_FILE).delete()) {
             throw new DataBaseException("Cannot delete a file!");
         }
     }
@@ -215,7 +218,7 @@ public final class DataBase implements Table {
     @Override
     public int commit() {
         int allNew = 0;
-        for (int i = 0; i < 256; ++i) {
+        for (int i = 0; i < DIRECTORY_COUNT * FILES_COUNT; ++i) {
             allNew += files[i].getNewKeys();
             files[i].commit();
         }
@@ -225,7 +228,7 @@ public final class DataBase implements Table {
     @Override
     public int size() {
         int allSize = 0;
-        for (int i = 0; i < 256; ++i) {
+        for (int i = 0; i < DIRECTORY_COUNT * FILES_COUNT; ++i) {
             allSize += files[i].getSize();
         }
         return allSize;
@@ -233,7 +236,7 @@ public final class DataBase implements Table {
 
     @Override
     public List<String> list() {
-        List<String> result = new ArrayList<String>();
+        List result = new ArrayList<>();
         for (DataBaseFile dbf : files) {
             if (dbf.getSize() != 0) {
                 List<String> ans = dbf.getAllKeys();
@@ -249,7 +252,7 @@ public final class DataBase implements Table {
     @Override
     public int rollback() {
         int allCanceled = 0;
-        for (int i = 0; i < 256; ++i) {
+        for (int i = 0; i < DIRECTORY_COUNT * FILES_COUNT; ++i) {
             allCanceled += files[i].getNewKeys();
             files[i].rollback();
         }
@@ -268,7 +271,7 @@ public final class DataBase implements Table {
 
     public int getNewKeys() {
         int allNewSize = 0;
-        for (int i = 0; i < 256; ++i) {
+        for (int i = 0; i < DIRECTORY_COUNT * FILES_COUNT; ++i) {
             allNewSize += files[i].getNewKeys();
         }
         return allNewSize;

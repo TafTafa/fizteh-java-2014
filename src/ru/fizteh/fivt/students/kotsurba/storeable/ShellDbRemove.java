@@ -1,24 +1,18 @@
 package ru.fizteh.fivt.students.kotsurba.storeable;
 
-import ru.fizteh.fivt.students.kotsurba.filemap.shell.SimpleShellCommand;
-
 public final class ShellDbRemove extends SimpleShellCommand {
-    private Context context;
 
     public ShellDbRemove(Context newContext) {
-        context = newContext;
-        setName("remove");
-        setNumberOfArgs(2);
-        setHint("usage: remove <key>");
+        super("remove", 2, "usage: remove <key>", newContext);
     }
 
     @Override
     public void run() {
-        if (context.table == null) {
+        if (context.getTable() == null) {
             System.out.println("no table");
             return;
         }
-        if (context.table.remove(getArg(1)) == null) {
+        if (context.getTable().remove(getArg(1)) == null) {
             System.out.println("not found");
         } else {
             System.out.println("removed");

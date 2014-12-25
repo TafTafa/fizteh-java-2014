@@ -15,14 +15,13 @@ import java.io.FileNotFoundException;
 
 public class DataBaseFile {
 
-    static final byte OLD_NODE = 1;
-    static final byte NEW_NODE = 2;
-    static final byte MODIFIED_NODE = 3;
-    static final byte DELETED_NODE = 4;
+    public enum NodeStatus {OLD_NODE, NEW_NODE, MODIFIED_NODE, DELETED_NODE}
 
+    public static final int DIRECTORY_COUNT = 16;
+    public static final int FILES_COUNT = 16;
 
     public final class Node {
-        private byte status;
+        private NodeStatus status;
         private boolean old;
         private byte[] key;
         private byte[] value;
@@ -33,7 +32,7 @@ public class DataBaseFile {
         }
 
         public Node(final byte[] newKey, final byte[] newValue) {
-            status = NEW_NODE;
+            status = NodeStatus.NEW_NODE;
             key = newKey;
             value = newValue;
             oldValue = null;
@@ -62,7 +61,7 @@ public class DataBaseFile {
         }
 
         public void setOld() {
-            status = OLD_NODE;
+            status = NodeStatus.OLD_NODE;
             old = true;
             oldValue = value;
         }
@@ -72,15 +71,15 @@ public class DataBaseFile {
         }
 
         public void setValue(final byte[] newValue) {
-            status = MODIFIED_NODE;
+            status = NodeStatus.MODIFIED_NODE;
             if ((oldValue != null) && (Arrays.equals(oldValue, newValue))) {
-                status = OLD_NODE;
+                status = NodeStatus.OLD_NODE;
             }
             value = newValue;
         }
 
         public void write(final RandomAccessFile outputFile) throws IOException {
-            if (status == DELETED_NODE) {
+            if (status == NodeStatus.DELETED_NODE) {
                 return;
             }
             outputFile.writeInt(key.length);
@@ -89,17 +88,17 @@ public class DataBaseFile {
             outputFile.write(value);
         }
 
-        public byte getStatus() {
+        public NodeStatus getStatus() {
             return status;
         }
 
-        public void setStatus(byte newStatus) {
+        public void setStatus(NodeStatus newStatus) {
             status = newStatus;
         }
 
         public void remove() {
             value = null;
-            status = DELETED_NODE;
+            status = NodeStatus.DELETED_NODE;
         }
 
     }
@@ -130,7 +129,8 @@ public class DataBaseFile {
 
     public boolean check() throws IOException {
         for (Node node : data) {
-            if (!((node.getZeroByte() % 16 == direcotryNumber) && ((node.getZeroByte() / 16) % 16 == fileNumber))) {
+            if (!((node.getZeroByte() % DIRECTORY_COUNT == direcotryNumber)
+                    && ((node.getZeroByte() / DIRECTORY_COUNT) % FILES_COUNT == fileNumber))) {
                 throw new IOException("Wrong file format key[0] =  " + String.valueOf(node.getZeroByte())
                         + " in file " + fileName);
             }
@@ -237,9 +237,9 @@ public class DataBaseFile {
             data.add(new Node(key, value));
             return null;
         } else {
-            int status = data.get(index).status;
+            NodeStatus status = data.get(index).status;
             String result = null;
-            if (status != DELETED_NODE) {
+            if (status != NodeStatus.DELETED_NODE) {
                 result = new String(data.get(index).value);
             }
             data.get(index).setValue(value);
@@ -251,7 +251,7 @@ public class DataBaseFile {
         byte[] key = keyStr.getBytes(StandardCharsets.UTF_8);
         int index = search(key);
         if (index != -1) {
-            if (data.get(index).status == DELETED_NODE) {
+            if (data.get(index).status == NodeStatus.DELETED_NODE) {
                 return null;
             }
             return new String(data.get(index).value);
@@ -267,7 +267,7 @@ public class DataBaseFile {
             return null;
         } else {
             String result;
-            if (data.get(index).status == DELETED_NODE) {
+            if (data.get(index).status == NodeStatus.DELETED_NODE) {
                 result = null;
             } else {
                 result = new String(data.get(index).value);
@@ -280,8 +280,8 @@ public class DataBaseFile {
     public int getNewKeys() {
         int result = 0;
         for (Node node : data) {
-            if ((node.getStatus() == NEW_NODE) || (node.getStatus() == MODIFIED_NODE)
-                    || ((node.getStatus() == DELETED_NODE) && (node.old))) {
+            if ((node.getStatus() == NodeStatus.NEW_NODE) || (node.getStatus() == NodeStatus.MODIFIED_NODE)
+                    || ((node.getStatus() == NodeStatus.DELETED_NODE) && (node.old))) {
                 ++result;
             }
         }
@@ -291,7 +291,7 @@ public class DataBaseFile {
     public int getSize() {
         int result = 0;
         for (Node node : data) {
-            if (node.getStatus() != DELETED_NODE) {
+            if (node.getStatus() != NodeStatus.DELETED_NODE) {
                 ++result;
             }
         }
@@ -300,9 +300,9 @@ public class DataBaseFile {
 
     public List<String> getAllKeys() {
 
-        List<String> result = new ArrayList<String>();
+        List result = new ArrayList();
         for (Node node : data) {
-            if (node.getStatus() != DELETED_NODE) {
+            if (node.getStatus() != NodeStatus.DELETED_NODE) {
                 result.add(new String(node.key));
             }
         }
@@ -312,7 +312,7 @@ public class DataBaseFile {
     public void commit() {
         save();
         for (int i = 0; i < data.size(); ) {
-            if (data.get(i).getStatus() == DELETED_NODE) {
+            if (data.get(i).getStatus() == NodeStatus.DELETED_NODE) {
                 data.remove(i);
             } else {
                 data.get(i).setOld();
@@ -325,4 +325,5 @@ public class DataBaseFile {
         data.clear();
         load();
     }
+
 }

@@ -32,13 +32,13 @@ public class MyTableProviderTest {
         Assert.assertNotNull(provider);
     }
 
-    @Test(expected = Error.class)
+    @Test(expected = RuntimeException.class)
     public void testSignature() {
         new File(path, "test").mkdirs();
         provider.getTable("test");
     }
 
-    @Test(expected = Error.class)
+    @Test(expected = RuntimeException.class)
     public void testSignatureEmpty() throws IOException {
         File file = new File(path, "test");
         file.mkdirs();

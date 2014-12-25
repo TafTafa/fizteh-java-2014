@@ -1,26 +1,20 @@
 package ru.fizteh.fivt.students.kotsurba.storeable;
 
-import ru.fizteh.fivt.students.kotsurba.filemap.shell.SimpleShellCommand;
-
 import java.util.List;
 
 public final class ShellDbList extends SimpleShellCommand {
-    private Context context;
 
     public ShellDbList(final Context newContext) {
-        context = newContext;
-        setName("list");
-        setNumberOfArgs(1);
-        setHint("usage: list");
+        super("list", 1, "usage: list", newContext);
     }
 
     @Override
     public void run() {
-        if (context.table == null) {
+        if (context.getTable() == null) {
             System.out.println("no table");
             return;
         }
-        List<String> str = context.table.list();
+        List<String> str = context.getTable().list();
         StringBuilder keys = new StringBuilder();
         for (String string : str) {
             keys.append(string).append(", ");
