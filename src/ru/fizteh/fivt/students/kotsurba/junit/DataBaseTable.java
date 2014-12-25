@@ -11,6 +11,11 @@ public final class DataBaseTable implements TableProvider {
     private String tableDir;
     private Map<String, DataBase> tableInUse;
 
+    public DataBaseTable(String newTableDir) {
+        tableDir = newTableDir;
+        tableInUse = new HashMap<String, DataBase>();
+    }
+
     public DataBase getTableFromMap(final String name) {
         if (!tableInUse.containsKey(name)) {
             tableInUse.put(name, new DataBase(name));
@@ -22,11 +27,6 @@ public final class DataBaseTable implements TableProvider {
         if (tableInUse.containsKey(name)) {
             tableInUse.remove(name);
         }
-    }
-
-    public DataBaseTable(String newTableDir) {
-        tableDir = newTableDir;
-        tableInUse = new HashMap<String, DataBase>();
     }
 
     private void checkName(final String name) {

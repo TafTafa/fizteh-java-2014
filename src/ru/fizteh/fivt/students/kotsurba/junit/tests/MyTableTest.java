@@ -77,7 +77,7 @@ public class MyTableTest {
     @Test
     public void testSizeCommit() {
         Assert.assertEquals(table.size(), 0);
-        int count = (Math.abs(new Random().nextInt()) % 255) + 100;
+        int count = (Math.abs(1000000) % 255) + 100;
         for (int i = 0; i < count; ++i) {
             Assert.assertNull(table.put(Integer.toString(i), "size test"));
         }
@@ -93,7 +93,7 @@ public class MyTableTest {
     @Test
     public void testRollback() {
         Assert.assertEquals(table.size(), 0);
-        int count = (Math.abs(new Random().nextInt()) % 255) + 100;
+        int count = (Math.abs(3000000) % 255) + 100;
         for (int i = 0; i < count; ++i) {
             Assert.assertNull(table.put(Integer.toString(i), "rollback test"));
         }
